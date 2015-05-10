@@ -7,7 +7,22 @@ from PyQt5 import QtCore
 import configparser
 
 from outlooker import Outlooker
+from event import Event
+from table_model import TableModel
 
+def convert_outlook_events_to_native_events(apmts):
+	events = []
+	for apmt in apmts:
+		event = Event()
+		event.set_source(apmt)
+		event.set_start_datetime(apmt.StartDate)
+		event.set_end_datetime(apmt.DueDate)
+		event.set_subject(apmt.Subject)
+		event.set_desc(apmt.Body)
+		event.set_complete(apmt.Complete)
+		events.append(event)
+	return events
+	
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
@@ -72,15 +87,10 @@ class MainUI(QtWidgets.QMainWindow):
 		for i in range(0, 6):
 			tmp_date = date.today() + timedelta(days=i)
 			apmts = self.outlooker.get_events_start_from(tmp_date)
-			total = len(apmts)
-			finished = 0
-			for apmt in apmts:
-				if apmt.Complete:
-					finished = finished + 1
-					
 			day = Day()
-			day.set_date(tmp_date.strftime("%m/%d/%Y"))
-			day.set_label(str(finished) + '/' + str(total))
+			day.set_events(apmts)
+			day.set_date(tmp_date)
+			day.update_label()
 			self.centralWidget.layout().addWidget(day)
 
 
@@ -88,14 +98,50 @@ class Day(QtWidgets.QDockWidget):
 
 	def __init__(self):
 		QtWidgets.QDockWidget.__init__(self)
-
-	def set_label(self, label):
-		self.label = QtWidgets.QLabel(label)
+		self.label = QtWidgets.QLabel()
 		self.setWidget(self.label)
-	
-	def set_date(self, date):
-		self.setWindowTitle(date)
+		self.label.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse)
+		#self.label.setOpenExternalLinks(True)
+		self.label.linkActivated.connect(self.label_activated_handler)
 
+	def get_finished_count(self):
+		cnt = 0
+		for event in self.events:
+			if event.complete:
+				cnt = cnt + 1
+		return cnt
+
+	def set_events(self, apmts):
+		self.events = convert_outlook_events_to_native_events(apmts)
+
+	def update_label(self):
+		finished = str(self.get_finished_count())
+		total = str(len(self.events))
+		self.label.setText(finished + '/' + '<a href="#total_' + total + '">'
+						   + total + '</a>')
+
+	def label_activated_handler(self, text):
+		self.table = QtWidgets.QTableView()
+		self.table_model = TableModel(self.events)
+		self.table.setModel(self.table_model)
+		self.table_model.itemChanged.connect(self.table_item_changed_handler)
+
+		self.table.show()
+
+	def set_date(self, date):
+		self.date = date
+		self.setWindowTitle(self.date.strftime('%m/%d/%Y'))
+	
+	def table_item_changed_handler(self, item):
+		event = self.events[item.row()]
+		if item.column() == 0:
+			event.update_subject(item.data(0))
+		elif item.column() == 1:
+			event.update_desc(item.data(0))
+		elif item.column() == 2:
+			event.update_desc(item.data(0))
+
+	
 
 def main():
 

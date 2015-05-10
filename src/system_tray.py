@@ -70,7 +70,8 @@ class MainUI(QtWidgets.QMainWindow):
 
 	def show_week(self):
 		for i in range(0, 6):
-			apmts = self.outlooker.get_events_start_from(date.today() + timedelta(days=i))
+			tmp_date = date.today() + timedelta(days=i)
+			apmts = self.outlooker.get_events_start_from(tmp_date)
 			total = len(apmts)
 			finished = 0
 			for apmt in apmts:
@@ -78,6 +79,7 @@ class MainUI(QtWidgets.QMainWindow):
 					finished = finished + 1
 					
 			day = Day()
+			day.set_date(tmp_date.strftime("%m/%d/%Y"))
 			day.set_label(str(finished) + '/' + str(total))
 			self.centralWidget.layout().addWidget(day)
 
@@ -90,6 +92,9 @@ class Day(QtWidgets.QDockWidget):
 	def set_label(self, label):
 		self.label = QtWidgets.QLabel(label)
 		self.setWidget(self.label)
+	
+	def set_date(self, date):
+		self.setWindowTitle(date)
 
 
 def main():

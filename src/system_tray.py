@@ -5,12 +5,15 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 import configparser
+
 from outlooker import Outlooker
+
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
 	def __init__(self, icon, parent=None):
 		QtWidgets.QSystemTrayIcon.__init__(self, icon, parent)
+
 		self.menu = QtWidgets.QMenu(parent)
 		self.init_menu_action()
 		self.setContextMenu(self.menu)
@@ -18,35 +21,30 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 	def set_main_ui(self, w):
 		self.main_ui = w
 
-	def exit_action(self):
+	def exit_action_handler(self):
 		QtWidgets.QApplication.quit()
 	
-	def show_action(self):
+	def show_action_handler(self):
 		self.main_ui.show()
 
-	def hide_action(self):
+	def hide_action_handler(self):
 		self.main_ui.hide()
 
-	def config_action(self):
-		if not self.config: 
-			self.config_init()
+	def config_action_handler(self):
 		self.config.show()
 
-	def config_init(self):
-		None
-
 	def init_menu_action(self):
-		self.showAction = self.menu.addAction('Show')
-		self.showAction.triggered.connect(self.show_action)
+		self.show_action = self.menu.addAction('Show')
+		self.show_action.triggered.connect(self.show_action_handler)
 
-		self.hideAction = self.menu.addAction('Hide')
-		self.hideAction.triggered.connect(self.hide_action)
+		self.hide_action = self.menu.addAction('Hide')
+		self.hide_action.triggered.connect(self.hide_action_handler)
 
-		self.configAction = self.menu.addAction('Config')
-		self.configAction.triggered.connect(self.config_action)
+		self.config_action = self.menu.addAction('Config')
+		self.config_action.triggered.connect(self.config_action_handler)
 
-		self.exitAction = self.menu.addAction('Exit')
-		self.exitAction.triggered.connect(self.exit_action)
+		self.exit_action = self.menu.addAction('Exit')
+		self.exit_action.triggered.connect(self.exit_action_handler)
 
 	
 class MainUI(QtWidgets.QMainWindow):
@@ -54,11 +52,20 @@ class MainUI(QtWidgets.QMainWindow):
 	def __init__(self):
 		QtWidgets.QMainWindow.__init__(self)
 		self.menuBar().hide()
-		self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
+		self.centralWidget = QtWidgets.QWidget()
+		self.setCentralWidget(self.centralWidget)
+		self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 		self.outlooker = Outlooker()
 
-	def setDisplayMode(self, mode):
+	def set_layout_mode(self, mode):
+		if mode == 'v':
+			self.layout = QtWidgets.QVBoxLayout()
+		elif mode == 'h':
+			self.layout = QtWidgets.QHBoxLayout()
 
+		self.centralWidget.setLayout(self.layout)
+
+	def set_display_mode(self, mode):
 		if mode == 'week':
 			self.show_week()
 
@@ -73,7 +80,8 @@ class MainUI(QtWidgets.QMainWindow):
 					
 			day = Day()
 			day.set_label(str(finished) + '/' + str(total))
-			self.addDockWidget(QtCore.Qt.TopDockWidgetArea, day)
+			self.centralWidget.layout().addWidget(day)
+
 
 class Day(QtWidgets.QDockWidget):
 
@@ -92,16 +100,17 @@ def main():
 
 	app = QtWidgets.QApplication(sys.argv)
 
-	w = QtWidgets.QWidget()
-	trayIcon = SystemTrayIcon(QtGui.QIcon("..\pics\icon.png"), w)
+	tray_icon_widget = QtWidgets.QWidget()
+	tray_icon = SystemTrayIcon(QtGui.QIcon("..\pics\icon.png"), tray_icon_widget)
+
 	main_ui = MainUI()
+	main_ui.set_layout_mode(config['Main']['layout'])
 	main_ui.setWindowOpacity(float(config['Main']['opacity']))
+	main_ui.set_display_mode(config['Main']['display_mode'])
 
-	main_ui.setDisplayMode(config['Main']['display_mode'])
+	tray_icon.set_main_ui(main_ui)
+	tray_icon.show()
 
-	trayIcon.set_main_ui(main_ui)
-
-	trayIcon.show()
 	sys.exit(app.exec_())
 
 if __name__ == '__main__':

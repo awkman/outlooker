@@ -24,21 +24,20 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 	def exit_action_handler(self):
 		QtWidgets.QApplication.quit()
 	
-	def show_action_handler(self):
-		self.main_ui.show()
-
-	def hide_action_handler(self):
-		self.main_ui.hide()
+	def show_toggle_action_handler(self):
+		if self.main_ui.isVisible():
+			self.main_ui.hide()
+			self.show_toogle_action.setText('Show')
+		else:
+			self.main_ui.show()
+			self.show_toogle_action.setText('Hide')
 
 	def config_action_handler(self):
 		self.config.show()
 
 	def init_menu_action(self):
-		self.show_action = self.menu.addAction('Show')
-		self.show_action.triggered.connect(self.show_action_handler)
-
-		self.hide_action = self.menu.addAction('Hide')
-		self.hide_action.triggered.connect(self.hide_action_handler)
+		self.show_toogle_action = self.menu.addAction('Show')
+		self.show_toogle_action.triggered.connect(self.show_toggle_action_handler)
 
 		self.config_action = self.menu.addAction('Config')
 		self.config_action.triggered.connect(self.config_action_handler)

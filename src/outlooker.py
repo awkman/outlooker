@@ -44,3 +44,21 @@ class Outlooker:
 		apmts = folder.Items.Restrict(restrict)
 
 		return apmts
+
+	def get_events_by_entry_id(self, id):
+		ns = self.o.Session
+		folder = ns.GetDefaultFolder(28)
+		restrict = "[EntryID] = '" + id + "'"
+		apmt = folder.Items.Restrict(restrict)
+		return apmt
+
+	@staticmethod
+	def del_event_by_entry_id(id):
+		app = win32com.client.Dispatch('Outlook.Application')
+		ns = app.Session
+		folder = ns.GetDefaultFolder(28)
+		apmt = ns.GetItemFromID(id)
+		#restrict = "[EntryID] = '" + id + "'"
+		#print(restrict)
+		#apmt = folder.Items.Restrict(restrict)
+		apmt.Delete()

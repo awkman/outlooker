@@ -128,7 +128,10 @@ class DayDetail(QtWidgets.QFrame):
 		self.desc_text = QtWidgets.QLineEdit()
 		date_label = QtWidgets.QLabel('Date')
 		self.date_text = QtWidgets.QLineEdit()
-		self.date_text.textChanged.connect(self.date_select_handler)
+		self.date_text.setText(date.today().strftime("%m/%d/%Y"))
+		#self.date_text.textChanged.connect(self.date_select_handler)
+		self.save_button = QtWidgets.QPushButton('Save')
+		self.save_button.clicked.connect(self.save_handler)
 
 		self.add_frame_layout = QtWidgets.QGridLayout()
 		self.add_frame_layout.addWidget(date_label, 1, 1)
@@ -137,19 +140,24 @@ class DayDetail(QtWidgets.QFrame):
 		self.add_frame_layout.addWidget(self.subject_text, 2, 2)
 		self.add_frame_layout.addWidget(desc_label, 3, 1)
 		self.add_frame_layout.addWidget(self.desc_text, 4, 1)
+		self.add_frame_layout.addWidget(self.save_button, 5, 1)
 		self.add_frame.setLayout(self.add_frame_layout)
 
 		self.add_frame.show()
 
+	def save_handler(self):
+		Outlooker.save_event(self.subject_text.text(), self.date_text.text(),
+							 self.desc_text.text())
+		pass
+
 	def date_select_handler(self):
-		self.date_text.setText('123')
+		pass
 		#self.calendar = QtWidgets.QCalendarWidget()
 		#self.calendar.show()
 		#self.calendar.clicked.connect(self.fill_date_handler)
 	
 	def fill_date_handler(self, date):
-		print(date.toString("MM/dd/yy"))
-		self.date_text.clear()
+		pass
 
 	def show(self):
 		parent_point = self.parent.mapToGlobal(QtCore.QPoint(self.parent.x(), self.parent.y()))

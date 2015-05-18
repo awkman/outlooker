@@ -62,3 +62,11 @@ class Outlooker:
 		#print(restrict)
 		#apmt = folder.Items.Restrict(restrict)
 		apmt.Delete()
+	@staticmethod
+	def save_event(subject, day, desc):
+		app = win32com.client.Dispatch('Outlook.Application')
+		apmt = app.CreateItem(3)
+		apmt.Subject = subject
+		apmt.Body = desc
+		apmt.StartDate = day
+		apmt.Save()

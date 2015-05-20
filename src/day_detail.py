@@ -15,14 +15,14 @@ class DayDetail(QtWidgets.QFrame):
 
 		self.layout = QtWidgets.QVBoxLayout()
 
-		self.group = QtWidgets.QGroupBox()
-		self.box_layout = QtWidgets.QHBoxLayout()
 		self.add_button = QtWidgets.QPushButton()
 		self.del_button = QtWidgets.QPushButton()
 		self.add_button.setText("Add")
 		self.del_button.setText("Del")
+		self.box_layout = QtWidgets.QHBoxLayout()
 		self.box_layout.addWidget(self.add_button)
 		self.box_layout.addWidget(self.del_button)
+		self.group = QtWidgets.QGroupBox()
 		self.group.setLayout(self.box_layout)
 		self.layout.addWidget(self.group)
 
@@ -46,13 +46,12 @@ class DayDetail(QtWidgets.QFrame):
 		self.add_frame = QtWidgets.QFrame()
 
 		subject_label = QtWidgets.QLabel('Subject')
-		self.subject_text = QtWidgets.QLineEdit()
 		desc_label = QtWidgets.QLabel('Description')
-		self.desc_text = QtWidgets.QLineEdit()
 		date_label = QtWidgets.QLabel('Date')
+		self.subject_text = QtWidgets.QLineEdit()
+		self.desc_text = QtWidgets.QLineEdit()
 		self.date_text = QtWidgets.QLineEdit()
 		self.date_text.setText(date.today().strftime("%m/%d/%Y"))
-		#self.date_text.textChanged.connect(self.date_select_handler)
 		self.save_button = QtWidgets.QPushButton('Save')
 		self.save_button.clicked.connect(self.save_handler)
 
@@ -71,16 +70,6 @@ class DayDetail(QtWidgets.QFrame):
 	def save_handler(self):
 		Outlooker.save_event(self.subject_text.text(), self.date_text.text(),
 							 self.desc_text.text())
-		pass
-
-	def date_select_handler(self):
-		pass
-		#self.calendar = QtWidgets.QCalendarWidget()
-		#self.calendar.show()
-		#self.calendar.clicked.connect(self.fill_date_handler)
-	
-	def fill_date_handler(self, date):
-		pass
 
 	def show(self):
 		parent_point = self.parent.mapToGlobal(QtCore.QPoint(self.parent.x(), self.parent.y()))

@@ -14,7 +14,6 @@ class Day(QtWidgets.QDockWidget):
 		self.label = QtWidgets.QLabel()
 		self.setWidget(self.label)
 		self.label.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse)
-		#self.label.setOpenExternalLinks(True)
 		self.label.linkActivated.connect(self.label_activated_handler)
 
 		self.set_events(apmts)
@@ -42,7 +41,6 @@ class Day(QtWidgets.QDockWidget):
 		self.label.setFont(self.label_font)
 
 	def label_activated_handler(self, text):
-		#self.table = QtWidgets.QTableView()
 		self.table = DayDetail(self)
 		self.table_model = TableModel(self.events)
 		self.table.setModel(self.table_model)

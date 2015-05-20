@@ -1,10 +1,7 @@
 import configparser
 import sys
-
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
-from PyQt5 import QtCore
-
 from main_ui import MainUI
 from system_tray import SystemTray
 

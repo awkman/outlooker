@@ -19,7 +19,6 @@ class MainUI(QtWidgets.QMainWindow):
 		self.centralWidget = QtWidgets.QWidget()
 		self.setCentralWidget(self.centralWidget)
 		self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-		self.outlooker = Outlooker()
 
 	def mouseMoveEvent(self, event):
 		self.move(event.pos())
@@ -39,7 +38,7 @@ class MainUI(QtWidgets.QMainWindow):
 	def show_week(self):
 		for i in range(0, 6):
 			tmp_date = date.today() + timedelta(days=i)
-			apmts = self.outlooker.get_events_start_from(tmp_date)
+			apmts = Outlooker.get_events_start_from(tmp_date)
 			day = Day(self, tmp_date, apmts)
 			day.update_label()
 			self.centralWidget.layout().addWidget(day)

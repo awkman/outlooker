@@ -39,9 +39,3 @@ class SystemTray(QtWidgets.QSystemTrayIcon):
 
 		self.exit_action = self.menu.addAction('Exit')
 		self.exit_action.triggered.connect(self.exit_action_handler)
-
-	
-	
-
-	
-
